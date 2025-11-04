@@ -1,15 +1,26 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {MenuComponent} from "./menu.component";
+import { ExportDataService } from './export-data.service';
+import { RegionService } from './region/region.service';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, MenuComponent],
   templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'DemoAngular';
-}
+  title = 'demo-angular';
 
-export const API_URL = 'http://localhost:8080/test-framework';
+  constructor(private exportDataService: ExportDataService, private regionService: RegionService) {}
+
+  exportData(format: string) {
+    this.regionService.getRegions().subscribe(data => {
+      if (format === 'excel') {
+        this.exportDataService.exportToExcel(data, 'Regions');
+      } else if (format === 'csv') {
+        this.exportDataService.exportToCSV(data, 'Regions');
+      } else if (format === 'pdf') {
+        this.exportDataService.exportToPDF(data, 'Regions');
+      }
+    });
+  }
+}
