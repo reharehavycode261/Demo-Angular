@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ExportDataService } from './export-data.service';
 import { RegionService } from './region/region.service';
 
@@ -12,15 +12,23 @@ export class AppComponent {
 
   constructor(private exportDataService: ExportDataService, private regionService: RegionService) {}
 
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const button = document.getElementById('back-to-top');
+    if (window.pageYOffset > 300) {
+      button.style.display = 'block';
+    } else {
+      button.style.display = 'none';
+    }
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   exportData(format: string) {
-    this.regionService.getRegions().subscribe(data => {
-      if (format === 'excel') {
-        this.exportDataService.exportToExcel(data, 'Regions');
-      } else if (format === 'csv') {
-        this.exportDataService.exportToCSV(data, 'Regions');
-      } else if (format === 'pdf') {
-        this.exportDataService.exportToPDF(data, 'Regions');
-      }
+    this.regionService.getRegions().subscribe(regions => {
+      this.exportDataService.export(regions, format);
     });
   }
 }
