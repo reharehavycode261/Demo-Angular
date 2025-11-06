@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ExportDataService } from './export-data.service';
 import { RegionService } from './region/region.service';
 
@@ -9,18 +9,23 @@ import { RegionService } from './region/region.service';
 })
 export class AppComponent {
   title = 'demo-angular';
+  showScrollToTop = false;
 
   constructor(private exportDataService: ExportDataService, private regionService: RegionService) {}
 
   exportData(format: string) {
-    this.regionService.getRegions().subscribe(data => {
-      if (format === 'excel') {
-        this.exportDataService.exportToExcel(data, 'Regions');
-      } else if (format === 'csv') {
-        this.exportDataService.exportToCSV(data, 'Regions');
-      } else if (format === 'pdf') {
-        this.exportDataService.exportToPDF(data, 'Regions');
-      }
+    this.regionService.getRegions().subscribe(regions => {
+      this.exportDataService.export(regions, format);
     });
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const yOffset = window.pageYOffset;
+    this.showScrollToTop = yOffset > 300;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
