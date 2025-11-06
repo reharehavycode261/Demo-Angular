@@ -1,6 +1,7 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { ExportDataService } from './export-data.service';
 import { RegionService } from './region/region.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +10,22 @@ import { RegionService } from './region/region.service';
 })
 export class AppComponent {
   title = 'demo-angular';
-  showScrollToTop = false;
 
-  constructor(private exportDataService: ExportDataService, private regionService: RegionService) {}
+  constructor(
+    private exportDataService: ExportDataService,
+    private regionService: RegionService,
+    private spinner: NgxSpinnerService
+  ) {}
 
-  exportData(format: string) {
-    this.regionService.getRegions().subscribe(regions => {
-      this.exportDataService.export(regions, format);
-    });
-  }
-
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const yOffset = window.pageYOffset;
-    this.showScrollToTop = yOffset > 300;
-  }
-
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  async exportData(format: string) {
+    this.spinner.show();
+    try {
+      const regions = await this.regionService.getRegions().toPromise();
+      // Effectuer l'exportation des données
+    } catch (error) {
+      console.error('Erreur lors de l\'exportation des données:', error);
+    } finally {
+      this.spinner.hide();
+    }
   }
 }

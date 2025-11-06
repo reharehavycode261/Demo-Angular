@@ -1,57 +1,46 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { ExportDataService } from './export-data.service';
-import { RegionService } from './region/region.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { of } from 'rxjs';
+
+class MockNgxSpinnerService {
+  show() {}
+  hide() {}
+}
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let exportDataService: ExportDataService;
-  let regionService: jasmine.SpyObj<RegionService>;
+  let spinnerService: NgxSpinnerService;
 
-  beforeEach(() => {
-    const regionSpy = jasmine.createSpyObj('RegionService', ['getRegions']);
-    const exportSpy = jasmine.createSpyObj('ExportDataService', ['export']);
-
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [AppComponent],
       providers: [
-        { provide: ExportDataService, useValue: exportSpy },
-        { provide: RegionService, useValue: regionSpy }
-      ]
-    });
+        { provide: NgxSpinnerService, useClass: MockNgxSpinnerService }
+      ],
+    }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
-    exportDataService = TestBed.inject(ExportDataService);
-    regionService = TestBed.inject(RegionService) as jasmine.SpyObj<RegionService>;
-
-    regionService.getRegions.and.returnValue(of([]));
+    spinnerService = TestBed.inject(NgxSpinnerService);
+    fixture.detectChanges();
   });
 
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should not show scroll to top button initially', () => {
-    expect(component.showScrollToTop).toBeFalse();
-  });
+  it('should show and hide spinner during data export', async () => {
+    spyOn(spinnerService, 'show');
+    spyOn(spinnerService, 'hide');
 
-  it('should show scroll to top button when window is scrolled down', () => {
-    component.onWindowScroll();
-    window.dispatchEvent(new Event('scroll'));
-    component.showScrollToTop = true;
-    fixture.detectChanges();
-    
-    const button = fixture.nativeElement.querySelector('button');
-    expect(button).toBeTruthy();
-    expect(button.textContent).toContain('Top');
-  });
+    spyOn(component['regionService'], 'getRegions').and.returnValue(of([]));
 
-  it('should scroll to top when button is clicked', () => {
-    spyOn(window, 'scrollTo');
-    component.scrollToTop();
-    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+    await component.exportData('pdf');
+    expect(spinnerService.show).toHaveBeenCalled();
+    expect(spinnerService.hide).toHaveBeenCalled();
   });
 });
