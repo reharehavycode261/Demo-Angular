@@ -1,6 +1,4 @@
-import { Component, HostListener } from '@angular/core';
-import { ExportDataService } from './export-data.service';
-import { RegionService } from './region/region.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +7,21 @@ import { RegionService } from './region/region.service';
 })
 export class AppComponent {
   title = 'demo-angular';
-  showScrollToTop = false;
 
-  constructor(private exportDataService: ExportDataService, private regionService: RegionService) {}
+  copyText(textElement: HTMLParagraphElement): void {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(textElement);
+    selection.removeAllRanges();
+    selection.addRange(range);
 
-  exportData(format: string) {
-    this.regionService.getRegions().subscribe(regions => {
-      this.exportDataService.export(regions, format);
-    });
-  }
-
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const yOffset = window.pageYOffset;
-    this.showScrollToTop = yOffset > 300;
-  }
-
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      document.execCommand('copy');
+      alert('Texte copié dans le presse-papiers!');
+    } catch (err) {
+      console.error('Unable to copy text', err);
+    } finally {
+      selection.removeAllRanges();
+    }
   }
 }
