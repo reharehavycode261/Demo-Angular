@@ -1,6 +1,13 @@
-<div class="export-options">
-  <h2>Export des données</h2>
-  <button (click)="exportData('pdf')">Exporter en PDF</button>
-  <button (click)="exportData('excel')">Exporter en Excel</button>
-  <button (click)="exportData('csv')">Exporter en CSV</button>
+<div style="position: relative;">
+  <h1>{{ title }}</h1>
+  <!-- Other component content -->
+  <!-- Back to Top Button -->
+  <button 
+    *ngIf="showBackToTopButton" 
+    class="back-to-top" 
+    (click)="scrollToTop()" 
+    style="position: fixed; bottom: 30px; right: 30px; display: block;">
+    ↑ Retour en haut
+  </button>
+  <router-outlet></router-outlet>
 </div>

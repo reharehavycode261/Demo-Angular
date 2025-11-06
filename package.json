@@ -17,15 +17,25 @@
     "@angular/forms": "^17.3.0",
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
-    "@angular/router": "^17.3.0",
-    "chart.js": "^4.0.1",     // Chart.js pour les graphiques interactifs
-    "d3": "^7.4.4",          // D3.js pour les visualisations complexes
-    "jspdf": "^2.5.1",       // jsPDF pour l'export de PDF
-    "exceljs": "^4.3.0"      // ExcelJS pour l'export de fichiers Excel
+    "rxjs": "~6.5.5",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.3.0",
-    "typescript": "~4.5.2",
-    "@angular/cli": "~17.3.0"
+    "@angular-devkit/build-angular": "~0.1102.1",
+    "@angular/cli": "~11.2.1",
+    "@angular/compiler-cli": "^11.2.1",
+    "@angular/language-service": "^11.2.1",
+    "@types/jasmine": "~3.6.0",
+    "@types/node": "^12.11.1",
+    "codelyzer": "^6.0.0",
+    "jasmine-core": "~3.6.0",
+    "jasmine-spec-reporter": "~5.0.0",
+    "karma": "~6.1.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "^1.6.0",
+    "typescript": "~4.1.5"
   }
 }
