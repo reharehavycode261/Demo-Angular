@@ -1,14 +1,4 @@
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
+<div class="important-text">
+  <p #textToCopy>This is an important text that can be copied!</p>
+  <button (click)="copyText(textToCopy)">Copier</button>
 </div>
-<router-outlet></router-outlet>
-
-<!-- Bouton "Retour en haut de page" -->
-<button 
-  *ngIf="showScrollToTop" 
-  (click)="scrollToTop()" 
-  style="position: fixed; bottom: 40px; right: 40px; z-index: 1000; padding: 10px 20px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0px 2px 10px rgba(0,0,0,0.3);">
-  &#8593; Top
-</button>
