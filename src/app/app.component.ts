@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { ExportDataService } from './export-data.service';
+import { RegionService } from './region/region.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-root',
@@ -8,20 +11,21 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'demo-angular';
 
-  copyText(textElement: HTMLParagraphElement): void {
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(textElement);
-    selection.removeAllRanges();
-    selection.addRange(range);
+  constructor(
+    private exportDataService: ExportDataService,
+    private regionService: RegionService,
+    private spinner: NgxSpinnerService
+  ) {}
 
+  async exportData(format: string) {
+    this.spinner.show();
     try {
-      document.execCommand('copy');
-      alert('Texte copié dans le presse-papiers!');
-    } catch (err) {
-      console.error('Unable to copy text', err);
+      const regions = await this.regionService.getRegions().toPromise();
+      // Effectuer l'exportation des données
+    } catch (error) {
+      console.error('Erreur lors de l\'exportation des données:', error);
     } finally {
-      selection.removeAllRanges();
+      this.spinner.hide();
     }
   }
 }

@@ -1,4 +1,13 @@
-<div class="important-text">
-  <p #textToCopy>This is an important text that can be copied!</p>
-  <button (click)="copyText(textToCopy)">Copier</button>
+<div>
+  <h1>{{ title }}</h1>
+  <button (click)="exportData('pdf')">Export as PDF</button>
+  <button (click)="exportData('csv')">Export as CSV</button>
+
+  <!-- Spinner -->
+  <ngx-spinner
+    bdColor="rgba(51, 51, 51, 0.8)"
+    size="medium"
+    color="#fff"
+    type="ball-scale-multiple">
+  </ngx-spinner>
 </div>

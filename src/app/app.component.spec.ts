@@ -1,14 +1,23 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { of } from 'rxjs';
+
+class MockNgxSpinnerService {
+  show() {}
+  hide() {}
+}
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+  let spinnerService: NgxSpinnerService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
+      declarations: [AppComponent],
+      providers: [
+        { provide: NgxSpinnerService, useClass: MockNgxSpinnerService }
       ],
     }).compileComponents();
   });
@@ -16,6 +25,7 @@ describe('AppComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
+    spinnerService = TestBed.inject(NgxSpinnerService);
     fixture.detectChanges();
   });
 
@@ -23,13 +33,14 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should copy text to clipboard when copyText is called', () => {
-    const spy = spyOn(document, 'execCommand').and.callThrough();
-    const textElement: HTMLParagraphElement = document.createElement('p');
-    textElement.textContent = 'Test Text';
+  it('should show and hide spinner during data export', async () => {
+    spyOn(spinnerService, 'show');
+    spyOn(spinnerService, 'hide');
 
-    component.copyText(textElement);
+    spyOn(component['regionService'], 'getRegions').and.returnValue(of([]));
 
-    expect(spy).toHaveBeenCalledWith('copy');
+    await component.exportData('pdf');
+    expect(spinnerService.show).toHaveBeenCalled();
+    expect(spinnerService.hide).toHaveBeenCalled();
   });
 });
