@@ -4,7 +4,7 @@ import { TerritorieService } from './territorie.service';
 import {NgFor, NgIf} from "@angular/common";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {FormsModule} from "@angular/forms";
-
+import { PaginationComponent } from '../pagination.component';
 
 @Component({
   selector: 'app-territories-list',
@@ -14,124 +14,31 @@ import {FormsModule} from "@angular/forms";
     NgIf,
     NgFor,
     RouterLink,
-    FormsModule
-  ],
+    FormsModule,
+    PaginationComponent
+  ]
 })
 export class TerritorieListComponent implements OnInit {
   territories: Territorie[] = [];
-  isLoading = false;
-  error: string | null = null;
-  territoryId:string | null = null;
-  pageNumber:number=1;
-  pageSize:number=5;
+  currentPage: number = 1;
+  totalItems: number = 0;
 
-  constructor(private route: ActivatedRoute,
-                            private router: Router,private territoriesService: TerritorieService) {}
+  constructor(private territorieService: TerritorieService) {}
 
-  ngOnInit(): void {
-    this.territoryId = this.route.snapshot.paramMap.get('id');
-    this.setPageSize(this.pageSize);
-    this.getTerritoriesPagination();
+  ngOnInit() {
+    this.loadTerritories();
   }
 
-  getTerritories(): void {
-    this.isLoading = true;
-    this.error = null;
-    if(this.territoryId)
-        {
-          this.territoriesService.getTerritorie(this.territoryId)
-                .subscribe({
-                  next: territorie => {
-                    this.territories = [territorie];
-                    this.isLoading = false;
-                  },
-                  error: error => {
-                    this.error = error.message;
-                    this.isLoading = false;
-                  }
-                });
-        }
-        else
-        {
-            this.territoriesService.getTerritories()
-                            .subscribe({
-                              next: territories => {
-                                this.territories = territories;
-                                this.isLoading = false;
-                              },
-                              error: error => {
-                                this.error = error.message;
-                                this.isLoading = false;
-                              }
-                            });
-        }
-
+  loadTerritories() {
+    // Simulated service call
+    this.territorieService.getTerritories(this.currentPage).subscribe(data => {
+      this.territories = data.items;
+      this.totalItems = data.total;
+    });
   }
 
-  getTerritoriesPagination(): void {
-    this.isLoading = true;
-    this.error = null;
-    if(this.territoryId)
-    {
-      this.territoriesService.getTerritorie(this.territoryId)
-        .subscribe({
-          next: territorie => {
-            this.territories = [territorie];
-            this.isLoading = false;
-          },
-          error: error => {
-            this.error = error.message;
-            this.isLoading = false;
-          }
-        });
-    }
-    else
-    {
-      this.territoriesService.getTerritoriesPagination(this.pageSize, this.pageNumber)
-        .subscribe({
-          next: territories => {
-            this.territories = territories;
-            this.isLoading = false;
-          },
-          error: error => {
-            this.error = error.message;
-            this.isLoading = false;
-          }
-        });
-    }
-  }
-
-  setPageSize(nbr: number): void {
-    this.pageSize = nbr;
-    this.getTerritoriesPagination();
-  }
-
-  nextPage(): void {
-    this.pageNumber = this.pageNumber + 1;
-    this.getTerritoriesPagination();
-  }
-
-  previousPage(): void {
-    this.pageNumber = this.pageNumber - 1;
-    this.getTerritoriesPagination();
-  }
-
-  deleteTerritorie(id: number): void {
-    if(!confirm('Voulez vous vraiment supprimer ce territorie?'))
-      return;
-
-    this.isLoading = true;
-    this.error = null;
-
-    this.territoriesService.deleteTerritories(id)
-      .subscribe({
-        next: () => {
-          this.getTerritories();
-        },
-        error: error => {
-          this.error = error.message;
-          this.isLoading = false;
-        }
-      });
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.loadTerritories();
   }
 }

@@ -1,19 +1,35 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import * as XLSX from 'xlsx';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
-  getDashboardData(): Observable<any> {
-    return this.http.get('/api/dashboard-data');
+  exportToExcel(data: any[], fileName: string) {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    XLSX.writeFile(workbook, `${fileName}.xlsx`);
   }
 
-  getExportData(): Observable<any> {
-    return this.http.get('/api/export-data');
+  exportToCsv(data: any[], fileName: string) {
+    const csvData = XLSX.utils.sheet_to_csv(XLSX.utils.json_to_sheet(data));
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.csv`;
+    a.click();
+  }
+
+  exportToPdf(data: any[], fileName: string) {
+    const documentDefinition = { content: JSON.stringify(data, null, 2) };
+    pdfMake.createPdf(documentDefinition).download(`${fileName}.pdf`);
   }
 }
