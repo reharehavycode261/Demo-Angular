@@ -10,7 +10,7 @@ describe('AppComponent', () => {
 
   beforeEach(() => {
     const regionSpy = jasmine.createSpyObj('RegionService', ['getRegions']);
-    const exportSpy = jasmine.createSpyObj('ExportDataService', ['exportToExcel', 'exportToCSV', 'exportToPDF']);
+    const exportSpy = jasmine.createSpyObj('ExportDataService', ['export']);
 
     TestBed.configureTestingModule({
       declarations: [AppComponent],
@@ -22,17 +22,43 @@ describe('AppComponent', () => {
 
     exportDataService = TestBed.inject(ExportDataService);
     regionService = TestBed.inject(RegionService) as jasmine.SpyObj<RegionService>;
+    regionService.getRegions.and.returnValue(of([]));
   });
 
-  it('should export data in Excel format when exportData is called with "excel"', () => {
+  it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    const mockData = [{ id: 1, name: 'Region 1' }];
-    regionService.getRegions.and.returnValue(of(mockData));
-
-    app.exportData('excel');
-    expect(exportDataService.exportToExcel).toHaveBeenCalledWith(mockData, 'Regions');
+    expect(app).toBeTruthy();
   });
 
-  // Tests similaires pour CSV et PDF doivent être ajoutés
+  it('should show back-to-top button when scrolled more than 300px', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    window.scrollTo(0, 301);
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(app.showBackToTopButton).toBeTruthy();
+  });
+
+  it('should hide back-to-top button when scrolled less than 300px', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    window.scrollTo(0, 299);
+    window.dispatchEvent(new Event('scroll'));
+
+    expect(app.showBackToTopButton).toBeFalsy();
+  });
+
+  it('should scroll to top when back-to-top button is clicked', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    spyOn(window, 'scrollTo');
+    
+    app.scrollToTop();
+
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+  });
 });
