@@ -1,6 +1,5 @@
-import { Component, HostListener } from '@angular/core';
-import { ExportDataService } from './export-data.service';
-import { RegionService } from './region/region.service';
+import { Component } from '@angular/core';
+import { CopyService } from './copy.service';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +8,11 @@ import { RegionService } from './region/region.service';
 })
 export class AppComponent {
   title = 'demo-angular';
-  showScrollToTop = false;
+  importantText = 'Texte important à copier';
 
-  constructor(private exportDataService: ExportDataService, private regionService: RegionService) {}
+  constructor(private copyService: CopyService) { }
 
-  exportData(format: string) {
-    this.regionService.getRegions().subscribe(regions => {
-      this.exportDataService.export(regions, format);
-    });
-  }
-
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const yOffset = window.pageYOffset;
-    this.showScrollToTop = yOffset > 300;
-  }
-
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  copyImportantText() {
+    this.copyService.copyText(this.importantText);
   }
 }
